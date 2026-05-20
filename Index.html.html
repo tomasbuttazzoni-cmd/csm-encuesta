@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSM Fase 1 &mdash; Diagn&oacute;stico de Marketing &middot; Divisi&oacute;n Industrial</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--brand:#1A3A5C;--brand-light:#E6F1FB;--accent:#F5A623;--surface:#fff;--surface2:#F7F7F5;--border:rgba(0,0,0,0.12);--text:#1a1a1a;--muted:#666;--danger:#dc2626;--ff:'DM Sans',sans-serif;--ff-serif:'DM Serif Display',serif;--radius:8px;--radius-lg:12px;}
+body{font-family:var(--ff);color:var(--text);background:#F4F3EF;min-height:100vh;}
+.header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;background:var(--brand);position:sticky;top:0;z-index:100;}
+.header-logo{display:flex;align-items:center;gap:10px;}
+.logo-diamond{width:36px;height:36px;background:var(--accent);clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);display:flex;align-items:center;justify-content:center;font-family:var(--ff-serif);font-size:11px;color:#fff;flex-shrink:0;}
+.header-title{color:#fff;font-size:14px;font-weight:500;letter-spacing:.02em;}
+.header-sub{color:rgba(255,255,255,.6);font-size:11px;margin-top:1px;}
+.admin-toggle{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;font-family:var(--ff);font-size:12px;padding:6px 14px;border-radius:var(--radius);cursor:pointer;transition:background .2s;}
+.admin-toggle:hover{background:rgba(255,255,255,.22);}
+.view{display:none;}.view.active{display:block;}
+.survey-wrap{max-width:660px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+.survey-intro{background:var(--brand-light);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:2rem;border-left:3px solid var(--brand);}
+.survey-intro p{font-size:13px;color:var(--muted);line-height:1.6;}
+.progress-bar-wrap{margin-bottom:2rem;}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px;}
+.progress-track{height:4px;background:#E0DDD6;border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--brand);border-radius:2px;transition:width .4s ease;}
+.block-header{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);}
+.block-tag{background:var(--brand);color:#fff;font-size:11px;font-weight:500;padding:3px 10px;border-radius:var(--radius);letter-spacing:.05em;text-transform:uppercase;}
+.block-title{font-size:16px;font-weight:500;}
+.q-wrap{margin-bottom:1.75rem;}
+.q-label{font-size:13px;color:var(--muted);margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.q-num{background:#EEECEA;color:var(--muted);font-size:11px;font-weight:500;padding:1px 7px;border-radius:var(--radius);}
+.q-text{font-size:15px;font-weight:400;margin-bottom:10px;line-height:1.5;}
+input[type=text],input[type=email],input[type=password],select,textarea{width:100%;font-family:var(--ff);font-size:14px;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);outline:none;transition:border-color .15s;appearance:none;-webkit-appearance:none;}
+input[type=text]:focus,input[type=email]:focus,input[type=password]:focus,select:focus,textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(26,58,92,.1);}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+textarea{resize:vertical;min-height:90px;line-height:1.6;}
+.check-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;}
+.check-item{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:border-color .15s,background .15s;font-size:13px;user-select:none;background:var(--surface);}
+.check-item:hover{border-color:var(--brand);background:var(--brand-light);}
+.check-item input{accent-color:var(--brand);flex-shrink:0;}
+.check-item.selected{border-color:var(--brand);background:var(--brand-light);}
+.radio-stack{display:flex;flex-direction:column;gap:6px;}
+.radio-item{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:border-color .15s,background .15s;font-size:13px;user-select:none;background:var(--surface);}
+.radio-item:hover{border-color:var(--brand);background:var(--brand-light);}
+.radio-item input{accent-color:var(--brand);flex-shrink:0;}
+.radio-item.selected{border-color:var(--brand);background:var(--brand-light);}
+.rank-container{display:flex;flex-direction:column;gap:6px;}
+.rank-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);cursor:grab;font-size:13px;transition:box-shadow .15s;}
+.rank-item:hover{box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.rank-item:active{cursor:grabbing;opacity:.8;}
+.rank-num{width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.rank-hint{font-size:11px;color:var(--muted);margin-top:5px;}
+.drag-icon{color:var(--muted);font-size:16px;margin-left:auto;}
+.ficha-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.ficha-grid .full{grid-column:1/-1;}
+.nav-btns{display:flex;justify-content:space-between;align-items:center;margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--border);}
+.btn-primary{background:var(--brand);color:#fff;font-family:var(--ff);font-size:14px;font-weight:500;padding:10px 28px;border:none;border-radius:var(--radius);cursor:pointer;transition:opacity .15s;}
+.btn-primary:hover{opacity:.85;}
+.btn-secondary{background:var(--surface);color:var(--text);font-family:var(--ff);font-size:14px;padding:10px 20px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:background .15s;}
+.btn-secondary:hover{background:var(--surface2);}
+.step-indicator{font-size:13px;color:var(--muted);}
+.error-msg{color:var(--danger);font-size:13px;margin-top:8px;padding:8px 12px;background:#FEF2F2;border-radius:var(--radius);display:none;}
+.success-screen{text-align:center;padding:4rem 1rem;}
+.success-icon{width:64px;height:64px;background:#E6F1FB;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:28px;}
+.success-screen h2{font-family:var(--ff-serif);font-size:26px;margin-bottom:.75rem;}
+.success-screen p{color:var(--muted);font-size:14px;line-height:1.7;}
+/* ADMIN */
+.admin-wrap{padding:1.5rem;max-width:1100px;margin:0 auto;}
+.admin-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;}
+.admin-title{font-family:var(--ff-serif);font-size:24px;}
+.admin-sub{font-size:13px;color:var(--muted);margin-top:3px;}
+.admin-login{max-width:380px;margin:3rem auto;background:var(--surface);padding:2rem;border-radius:var(--radius-lg);border:1px solid var(--border);}
+.admin-login h2{font-family:var(--ff-serif);font-size:22px;margin-bottom:.5rem;}
+.admin-login p{color:var(--muted);font-size:13px;margin-bottom:1.5rem;}
+.login-error{background:#FEF2F2;color:var(--danger);font-size:13px;padding:8px 12px;border-radius:var(--radius);margin-bottom:1rem;display:none;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:2rem;}
+.stat-card{background:var(--surface);border-radius:var(--radius);padding:1rem 1.25rem;border:1px solid var(--border);}
+.stat-label{font-size:12px;color:var(--muted);margin-bottom:6px;}
+.stat-value{font-size:28px;font-weight:500;color:var(--brand);}
+.stat-badge{font-size:11px;color:var(--muted);margin-top:3px;}
+.chip{font-size:11px;padding:3px 10px;border-radius:var(--radius);font-weight:500;display:inline-block;}
+.chip-blue{background:#E6F1FB;color:#0C447C;}
+.chip-amber{background:#FAEEDA;color:#633806;}
+.chip-teal{background:#E1F5EE;color:#085041;}
+.chip-red{background:#FCEBEB;color:#791F1F;}
+.chip-green{background:#EAF3DE;color:#27500A;}
+.chip-purple{background:#EEEDFE;color:#3C3489;}
+.chip-gray{background:#F1EFE8;color:#444441;}
+.responses-table-wrap{overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border);}
+.responses-table{width:100%;border-collapse:collapse;font-size:13px;}
+.responses-table th{background:var(--brand);color:#fff;padding:10px 14px;text-align:left;font-weight:500;white-space:nowrap;}
+.responses-table th:first-child{border-radius:var(--radius-lg) 0 0 0;}
+.responses-table th:last-child{border-radius:0 var(--radius-lg) 0 0;}
+.responses-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle;background:var(--surface);}
+.responses-table tr:last-child td{border-bottom:none;}
+.responses-table tr:hover td{background:var(--brand-light);}
+.empty-state{text-align:center;padding:3rem;color:var(--muted);font-size:14px;}
+.detail-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-top:1.5rem;display:none;}
+.detail-panel.open{display:block;}
+.detail-q{margin-bottom:1rem;}
+.detail-q-label{font-size:11px;color:var(--muted);margin-bottom:3px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;}
+.detail-q-answer{font-size:14px;line-height:1.5;}
+.section-divider{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:.5rem 0;margin:1.25rem 0 .75rem;border-top:1px solid var(--border);}
+.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.5rem;}
+.tab-btn{font-family:var(--ff);font-size:13px;padding:9px 18px;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;color:var(--muted);transition:all .15s;margin-bottom:-1px;}
+.tab-btn.active{color:var(--brand);border-bottom-color:var(--brand);font-weight:500;}
+.bar-chart-item{margin-bottom:12px;}
+.bar-chart-label{font-size:12px;color:var(--muted);margin-bottom:4px;display:flex;justify-content:space-between;}
+.bar-track{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;background:var(--brand);border-radius:4px;transition:width .5s ease;}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;}
+.chart-card-title{font-size:13px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem;}
+@media(max-width:600px){
+  .ficha-grid{grid-template-columns:1fr;}
+  .check-grid{grid-template-columns:1fr 1fr;}
+  .survey-wrap{padding:1.25rem 1rem 3rem;}
+  .admin-wrap{padding:1rem;}
+  .charts-grid{grid-template-columns:1fr;}
+  .header{padding:.75rem 1rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">
+    <div class="logo-diamond">C</div>
+    <div>
+      <div class="header-title">Centro de Servicios de MKT</div>
+      <div class="header-sub">CHRISCO &mdash; Divisi&oacute;n Industrial</div>
+    </div>
+  </div>
+  <button class="admin-toggle" onclick="showAdmin()">&#9679; Admin</button>
+</div>
+
+<!-- SURVEY -->
+<div id="view-survey" class="view active">
+  <div class="survey-wrap">
+
+    <div id="success-screen" class="success-screen" style="display:none;">
+      <div class="success-icon">&#10003;</div>
+      <h2>&iexcl;Gracias por tu respuesta!</h2>
+      <p>Tu diagn&oacute;stico ha sido registrado correctamente.<br>Alejandra Tapia revisar&aacute; tus respuestas a la brevedad.</p>
+    </div>
+
+    <div id="survey-form">
+      <div class="survey-intro">
+        <p>Este cuestionario tiene como objetivo levantar la situaci&oacute;n actual de cada empresa respecto a marketing, identificar necesidades y evaluar la disposici&oacute;n frente a un Centro de Servicios de MKT compartido. Duraci&oacute;n estimada: 10&ndash;15 minutos.</p>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-label"><span id="step-label">Ficha de identificaci&oacute;n</span><span id="step-count">Paso 1 de 4</span></div>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:25%"></div></div>
+      </div>
+
+      <!-- PASO 0: FICHA -->
+      <div id="step-0">
+        <div class="block-header"><div class="block-tag">Ficha</div><div class="block-title">Datos de identificaci&oacute;n</div></div>
+        <div class="ficha-grid">
+          <div class="q-wrap full">
+            <div class="q-text">Empresa <span style="color:var(--danger)">*</span></div>
+            <select id="f-empresa">
+              <option value="">&mdash; Selecciona tu empresa &mdash;</option>
+              <option>CB Chile</option>
+              <option>CB Per&uacute;</option>
+              <option>TST (Technosteel)</option>
+              <option>MDF (Mining Drilling Fluids)</option>
+              <option>UHCO</option>
+              <option>CHRISCO (Christensen Comercial)</option>
+            </select>
+          </div>
+          <div class="q-wrap">
+            <div class="q-text">Nombre <span style="color:var(--danger)">*</span></div>
+            <input type="text" id="f-nombre" placeholder="Tu nombre completo" autocomplete="name">
+          </div>
+          <div class="q-wrap">
+            <div class="q-text">Cargo <span style="color:var(--danger)">*</span></div>
+            <input type="text" id="f-cargo" placeholder="Ej. Gerente General">
+          </div>
+          <div class="q-wrap full">
+            <div class="q-text">Email corporativo <span style="color:var(--danger)">*</span></div>
+            <input type="email" id="f-email" placeholder="nombre@empresa.com" autocomplete="email">
+          </div>
+        </div>
+        <div class="error-msg" id="error-0">Por favor completa todos los campos obligatorios.</div>
+        <div class="nav-btns"><span></span><button class="btn-primary" onclick="goStep(1)">Siguiente &rarr;</button></div>
+      </div>
+
+      <!-- PASO 1: BLOQUE A -->
+      <div id="step-1" style="display:none;">
+        <div class="block-header"><div class="block-tag">Bloque A</div><div class="block-title">Situaci&oacute;n actual de marketing</div></div>
+
+        <div class="q-wrap">
+          <div class="q-label"><span class="q-num">A1</span></div>
+          <div class="q-text">&iquest;Tu empresa cuenta con alguien dedicado a marketing o comunicaciones, aunque sea de forma parcial?</div>
+          <div class="radio-stack">
+            <label class="radio-item"><input type="radio" name="a1" value="Si, a tiempo completo"> S&iacute;, a tiempo completo</label>
+            <label class="radio-item"><input type="radio" name="a1" value="Si, parcialmente"> S&iacute;, parcialmente (adem&aacute;s de otras funciones)</label>
+            <label class="radio-item"><input type="radio" name="a1" value="No"> No, nadie con ese rol</label>
+          </div>
+        </div>
+
+        <div class="q-wrap">
+          <div class="q-label"><span class="q-num">A2</span></div>
+          <div class="q-text">&iquest;C&oacute;mo resuelven hoy sus necesidades de marketing? <span style="font-size:12px;color:var(--muted)">(Selecciona todas las que apliquen)</span></div>
+          <div class="check-grid" id="a2">
+            <label class="check-item"><input type="checkbox" value="Internamente"> Internamente</label>
+            <label class="check-item"><input type="checkbox" value="Agencia externa"> Agencia externa</label>
+            <label class="check-item"><input type="checkbox" value="Freelancers"> Freelancers</label>
+            <label class="check-item"><input type="checkbox" value="Sin marketing formal"> Sin marketing formal</label>
+          </div>
+        </div>
+
+        <div class="q-wrap">
+          <div class="q-label"><span class="q-num">A3</span></div>
+          <div class="q-text">&iquest;Cu&aacute;nto invierten aproximadamente al a&ntilde;o en marketing, publicidad y comunicaciones? <span style="font-size:12px;color:var(--muted)">(incluye sueldos, agencias, eventos)</span></div>
+          <div class="radio-stack">
+            <label class="radio-item"><input type="radio" name="a3" value="Menos de USD 5.000"> Menos de USD 5.000</label>
+            <label class="radio-item"><input type="radio" name="a3" value="USD 5.000 a 20.000"> USD 5.000 &ndash; 20.000</label>
+            <label class="radio-item"><input type="radio" name="a3" value="USD 20.000 a 50.000"> USD 20.000 &ndash; 50.000</label>
+            <label class="radio-item"><input type="radio" name="a3" value="Mas de USD 50.000"> M&aacute;s de USD 50.000</label>
+            <label class="radio-item"><input type="radio" name="a3" value="No lo se / no esta medido"> No lo s&eacute; / no est&aacute; medido</label>
+          </div>
+        </div>
+
+        <div class="q-wrap">
+          <div class="q-label"><span class="q-num">A4</span></div>
+          <div class="q-text">&iquest;Qu&eacute; canales utilizan actualmente? <span style="font-size:12px;color:var(--muted)">(Selecciona todas las que apliquen)</span></div>
+          <div class="check-grid" id="a4">
+            <label class="check-item"><input type="checkbox" value="LinkedIn"> LinkedIn</label>
+            <label class="check-item"><input type="checkbox" value="Instagram"> Instagram</label>
+            <label class="check-item"><input type="checkbox" value="Facebook"> Facebook</label>
+            <label class="check-item"><input type="checkbox" value="YouTube"> YouTube</label>
+            <label class="check-item"><input type="checkbox" value="WhatsApp Business"> WhatsApp Business</label>
+            <label class="check-item"><input type="checkbox" value="Email marketing"> Email marketing</label>
+            <label class="check-item"><input type="checkbox" value="Sitio web"> Sitio web</label>
+            <label class="check-item"><input type="checkbox" value="Ferias y eventos"> Ferias y eventos</label>
+            <label class="check-item"><input type="checkbox" value="Boca a boca"> Boca a boca</label>
+            <label class="check-item"><input type="checkbox" value="Ninguno formal"> Ninguno formal</label>
+          </div>
+        </div>
+
+        <div class="q-wrap">
+          <div class="q-label"><span class="q-num">A5</span></div>
+          <div class="q-text">&iquest;Tu empresa cuenta con un sitio web activo y actualizado?</div>
+          <div class="radio-stack">
+            <label class="radio-item"><input type="radio" name="a5" value="Si, actualizado"> S&iacute;, actualizado y funcional</label>
+            <label class="radio-item"><input type="radio" name="a5" value="Existe pero desactualizado"> Existe pero est&aacute; desactualizado</label>
+            <label class="radio-item"><input type="radio" name="a5" value="No tenemos sitio web"> No tenemos sitio web</label>
+          </div>
+        </div>
+
+        <div class="nav-btns">
+          <button class="btn-secondary" onclick="goStep(0)">&larr; Anterior</button>
+          <span class="step-indicator">Paso 2 de 4</span>
+          <button class="btn-primary" onclick="goStep(2)">Siguiente &rarr;</button>
+        </div>
+      </div>
+
+      <!-- PASO 2: BLOQUE B -->
+      <div id="step-2" style="display:none;">
+        <div class="block-header"><div class="block-tag">Bloque B</div><div class="block-title">Necesidades, dolores y prioridades</div></div>
+
+        <div class="q-wrap">
+          <div class="q-label"><span class="q-num">B1</span></div>
+          <div class="q-text">&iquest;Qu&eacute; es lo que m&aacute;s les cuesta resolver solos en marketing? &iquest;D&oacute;nde sienten que est&aacute;n perdiendo oportunidades?</div>
+          <textarea id="b1" placeholder="Describe brevemente las principales brechas o frustraciones..."></textarea>
+        </div>
+
+        <div class="q-wrap">
+          <div class="q-label"><span class="q-num">B2</span></div>
+          <div class="q-text">&iquest;Han trabajado con agencias externas de marketing? Si es as&iacute;, &iquest;c&oacute;mo fue la experiencia?</div>
+          <div class="radio-stack">
+            <label class="radio-item"><input type="radio" name="b2" value="No hemos trabajado con agencias"> No hemos trabajado con agencias</label>
+            <label class="radio-item"><input type="radio" name="b2" value="Si, experiencia positiva"> S&iacute;, y la experiencia fue positiva</label>
+            <label class="radio-item"><input type="radio" name="b2" value="Si, experiencia mixta"> S&iacute;, con resultados mixtos</label>
+            <label class="radio-item"><input type="radio" name="b2" value="Si, experiencia negativa"> S&iacute;, y no funcion&oacute; bien</label>
+          </div>
+        </div>
+
+        <div class="q-wrap">
+          <div class="q-label"><span class="q-num">B3</span></div>
+          <div class="q-text">Si tuvieras acceso a un equipo de marketing dedicado, &iquest;qu&eacute; le pedir&iacute;as primero? <span style="font-size:12px;color:var(--muted)">(Elige hasta 3)</span></div>
+          <div class="check-grid" id="b3">
+            <label class="check-item"><input type="checkbox" value="Contenido para redes sociales"> Contenido para redes</label>
+            <label class="check-item"><input type="checkbox" value="Diseno grafico y materiales"> Dise&ntilde;o gr&aacute;fico</label>
+            <label class="check-item"><input type="checkbox" value="Sitio web o landing page"> Sitio web / landing</label>
+            <label class="check-item"><input type="checkbox" value="Campanas de email"> Campa&ntilde;as de email</label>
+            <label class="check-item"><input type="checkbox" value="Propuestas comerciales y brochures"> Brochures / propuestas</label>
+            <label class="check-item"><input type="checkbox" value="Estrategia de marca"> Estrategia de marca</label>
+            <label class="check-item"><input type="checkbox" value="Gestion de ferias y eventos"> Ferias y eventos</label>
+            <label class="check-item"><input type="checkbox" value="Videos y fotografia"> Videos y fotograf&iacute;a</label>
+          </div>
+        </div>
+
+        <div class="q-wrap">
+          <div class="q-label"><span class="q-num">B4</span></div>
+          <div class="q-text">&iquest;Tu negocio tiene estacionalidad marcada? &iquest;En qu&eacute; trimestre necesitar&iacute;as m&aacute;s apoyo de marketing?</div>
+          <div class="check-grid" id="b4">
+            <label class="check-item"><input type="checkbox" value="Q1 Ene-Mar"> Q1 Ene&ndash;Mar</label>
+            <label class="check-item"><input type="checkbox" value="Q2 Abr-Jun"> Q2 Abr&ndash;Jun</label>
+            <label class="check-item"><input type="checkbox" value="Q3 Jul-Sep"> Q3 Jul&ndash;Sep</label>
+            <label class="check-item"><input type="checkbox" value="Q4 Oct-Dic"> Q4 Oct&ndash;Dic</label>
+            <label class="check-item"><input type="checkbox" value="Sin estacionalidad clara"> Sin estacionalidad</label>
+          </div>
+        </div>
+
+        <div class="q-wrap">
+          <div class="q-label"><span class="q-num">B5</span></div>
+          <div class="q-text">&iquest;Tu cliente objetivo es principalmente...?</div>
+          <div class="radio-stack">
+            <label class="radio-item"><input type="radio" name="b5" value="B2B exclusivamente"> B2B exclusivamente (empresas mineras, constructoras, industria)</label>
+            <label class="radio-item"><input type="radio" name="b5" value="Mayormente B2B con algo de B2C"> Mayormente B2B con algo de B2C</label>
+            <label class="radio-item"><input type="radio" name="b5" value="Mixto B2B y B2C"> Mixto B2B y B2C</label>
+            <label class="radio-item"><input type="radio" name="b5" value="Principalmente B2C"> Principalmente B2C</label>
+          </div>
+        </div>
+
+        <div class="nav-btns">
+          <button class="btn-secondary" onclick="goStep(1)">&larr; Anterior</button>
+          <span class="step-indicator">Paso 3 de 4</span>
+          <button class="btn-primary" onclick="goStep(3)">Siguiente &rarr;</button>
+        </div>
+      </div>
+
+      <!-- PASO 3: BLOQUE C -->
+      <div id="step-3" style="display:none;">
+        <div class="block-header"><div class="block-tag">Bloque C</div><div class="block-title">Disposici&oacute;n frente al CSM</div></div>
+
+        <div class="q-wrap">
+          <div class="q-label"><span class="q-num">C1</span></div>
+          <div class="q-text">&iquest;Qu&eacute; condiciones requiere para que un servicio de marketing desde el holding agregue valor a tu empresa?</div>
+          <textarea id="c1" placeholder="Ej. que conozca bien el rubro minero, que los plazos sean cortos, que no sea m&aacute;s caro que contratar afuera..."></textarea>
+        </div>
+
+        <div class="q-wrap">
+          <div class="q-label"><span class="q-num">C2</span></div>
+          <div class="q-text">Al contratar un servicio de marketing, &iquest;qu&eacute; factores son m&aacute;s importantes? <span style="font-size:12px;color:var(--muted)">(Ordena arrastrando de mayor a menor importancia)</span></div>
+          <div class="rank-container" id="c2-rank" ondragover="event.preventDefault()">
+            <div class="rank-item" draggable="true" data-val="Calidad del trabajo" ondragstart="dragStart(event)" ondrop="dragDrop(event)"><span class="rank-num">1</span> Calidad del trabajo <span class="drag-icon">&#8597;</span></div>
+            <div class="rank-item" draggable="true" data-val="Conocimiento del rubro" ondragstart="dragStart(event)" ondrop="dragDrop(event)"><span class="rank-num">2</span> Conocimiento del rubro <span class="drag-icon">&#8597;</span></div>
+            <div class="rank-item" draggable="true" data-val="Confianza" ondragstart="dragStart(event)" ondrop="dragDrop(event)"><span class="rank-num">3</span> Confianza <span class="drag-icon">&#8597;</span></div>
+            <div class="rank-item" draggable="true" data-val="Velocidad de respuesta" ondragstart="dragStart(event)" ondrop="dragDrop(event)"><span class="rank-num">4</span> Velocidad de respuesta <span class="drag-icon">&#8597;</span></div>
+            <div class="rank-item" draggable="true" data-val="Precio / costo" ondragstart="dragStart(event)" ondrop="dragDrop(event)"><span class="rank-num">5</span> Precio / costo <span class="drag-icon">&#8597;</span></div>
+            <div class="rank-item" draggable="true" data-val="Estetica y presentacion" ondragstart="dragStart(event)" ondrop="dragDrop(event)"><span class="rank-num">6</span> Est&eacute;tica y presentaci&oacute;n <span class="drag-icon">&#8597;</span></div>
+          </div>
+          <div class="rank-hint">&#8593;&#8595; Arrastra los elementos para reordenar</div>
+        </div>
+
+        <div class="q-wrap">
+          <div class="q-label"><span class="q-num">C3</span></div>
+          <div class="q-text">&iquest;Tendr&iacute;an presupuesto disponible en los pr&oacute;ximos 6 meses para un servicio de marketing?</div>
+          <div class="radio-stack">
+            <label class="radio-item"><input type="radio" name="c3" value="Si, hay presupuesto disponible"> S&iacute;, hay presupuesto disponible</label>
+            <label class="radio-item"><input type="radio" name="c3" value="Requeriria aprobacion especial"> Requerir&iacute;a aprobaci&oacute;n especial</label>
+            <label class="radio-item"><input type="radio" name="c3" value="Probablemente no en ese plazo"> Probablemente no en ese plazo</label>
+            <label class="radio-item"><input type="radio" name="c3" value="No lo se"> No lo s&eacute;</label>
+          </div>
+        </div>
+
+        <div class="q-wrap">
+          <div class="q-label"><span class="q-num">C4</span></div>
+          <div class="q-text">&iquest;Hay algo que los har&iacute;a NO usar el servicio, aunque fuera bueno y accesible?</div>
+          <textarea id="c4" placeholder="Ej. si no tiene autonom&iacute;a para ejecutar, si interfiere con nuestra imagen de marca..."></textarea>
+        </div>
+
+        <div class="q-wrap">
+          <div class="q-label"><span class="q-num">C5</span></div>
+          <div class="q-text">&iquest;Existe alguna necesidad urgente de marketing que un equipo dedicado podr&iacute;a resolver ahora mismo?</div>
+          <textarea id="c5" placeholder="Ej. necesitamos actualizar el cat&aacute;logo de productos, redise&ntilde;ar la web..."></textarea>
+        </div>
+
+        <div class="q-wrap">
+          <div class="q-label"><span class="q-num">C6</span></div>
+          <div class="q-text">En general, &iquest;cu&aacute;n abiertos estar&iacute;an a recibir servicios de marketing desde el holding?</div>
+          <div class="radio-stack">
+            <label class="radio-item"><input type="radio" name="c6" value="Muy abiertos"> Muy abiertos &mdash; lo ver&iacute;amos con mucho inter&eacute;s</label>
+            <label class="radio-item"><input type="radio" name="c6" value="Abiertos con condiciones"> Abiertos, pero depender&iacute;a de las condiciones</label>
+            <label class="radio-item"><input type="radio" name="c6" value="Dudosos"> Dudosos &mdash; necesitar&iacute;amos ver resultados primero</label>
+            <label class="radio-item"><input type="radio" name="c6" value="Poco abiertos"> Poco abiertos &mdash; preferimos resolver esto afuera</label>
+          </div>
+        </div>
+
+        <div class="q-wrap">
+          <div class="q-label"><span class="q-num">C7</span></div>
+          <div class="q-text">&iquest;Tienes alg&uacute;n comentario adicional o algo que quieras agregar?</div>
+          <textarea id="c7" placeholder="Cualquier observaci&oacute;n, sugerencia o pregunta sobre este proceso..."></textarea>
+        </div>
+
+        <div class="error-msg" id="error-submit">Por favor completa los campos obligatorios antes de enviar.</div>
+        <div class="nav-btns">
+          <button class="btn-secondary" onclick="goStep(2)">&larr; Anterior</button>
+          <span class="step-indicator">Paso 4 de 4</span>
+          <button class="btn-primary" onclick="submitSurvey()">Enviar respuesta &#10003;</button>
+        </div>
+      </div>
+
+    </div><!-- /survey-form -->
+  </div><!-- /survey-wrap -->
+</div><!-- /view-survey -->
+
+<!-- ADMIN -->
+<div id="view-admin" class="view">
+  <div class="admin-wrap">
+
+    <div id="admin-login-screen">
+      <div class="admin-login">
+        <h2>Acceso administrador</h2>
+        <p>Ingresa tus credenciales para ver el compilado de respuestas.</p>
+        <div class="login-error" id="login-error">Email o contrase&ntilde;a incorrectos.</div>
+        <div style="margin-bottom:10px;"><input type="email" id="admin-email" placeholder="Email" autocomplete="username"></div>
+        <div style="margin-bottom:14px;"><input type="password" id="admin-pass" placeholder="Contrase&ntilde;a" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <button class="btn-primary" onclick="doLogin()" style="width:100%;">Ingresar</button>
+        <p style="font-size:11px;color:var(--muted);margin-top:14px;text-align:center;border-top:1px solid var(--border);padding-top:12px;">admin@chrisco.cl &nbsp;/&nbsp; admin123</p>
+      </div>
+    </div>
+
+    <div id="admin-dashboard" style="display:none;">
+      <div class="admin-top">
+        <div>
+          <div class="admin-title">Panel de resultados &mdash; CSM Fase 1</div>
+          <div class="admin-sub">Diagn&oacute;stico de necesidades de marketing &middot; Divisi&oacute;n Industrial</div>
+        </div>
+        <button class="btn-secondary" onclick="logoutAdmin()" style="font-size:12px;">Cerrar sesi&oacute;n</button>
+      </div>
+
+      <div class="stats-grid" id="stats-grid"></div>
+
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="showTab('tab-responses')">Respuestas</button>
+        <button class="tab-btn" onclick="showTab('tab-stats')">Estad&iacute;sticas</button>
+      </div>
+
+      <div id="tab-responses">
+        <div class="responses-table-wrap">
+          <table class="responses-table">
+            <thead><tr><th>#</th><th>Empresa</th><th>Nombre</th><th>Cargo</th><th>Apertura CSM</th><th>Presupuesto</th><th>Fecha</th><th></th></tr></thead>
+            <tbody id="responses-tbody"></tbody>
+          </table>
+        </div>
+        <div class="detail-panel" id="detail-panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+            <strong id="detail-title" style="font-size:16px;"></strong>
+            <button class="btn-secondary" onclick="closeDetail()" style="font-size:12px;padding:6px 14px;">Cerrar</button>
+          </div>
+          <div id="detail-body"></div>
+        </div>
+      </div>
+
+      <div id="tab-stats" style="display:none;">
+        <div class="charts-grid">
+          <div class="chart-card"><div class="chart-card-title">Apertura al CSM</div><div id="chart-apertura"></div></div>
+          <div class="chart-card"><div class="chart-card-title">Presupuesto disponible</div><div id="chart-presupuesto"></div></div>
+          <div class="chart-card"><div class="chart-card-title">Servicios m&aacute;s solicitados</div><div id="chart-servicios"></div></div>
+          <div class="chart-card"><div class="chart-card-title">Canales en uso</div><div id="chart-canales"></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const COMPANIES=['CB Chile','CB Peru','TST (Technosteel)','MDF (Mining Drilling Fluids)','UHCO','CHRISCO (Christensen Comercial)'];
+const COLORS=['chip-blue','chip-teal','chip-amber','chip-red','chip-green','chip-purple'];
+const STORE_KEY='csm_di_responses_v3';
+
+function save(data){try{localStorage.setItem(STORE_KEY,JSON.stringify(data));}catch(e){}}
+function load(){try{const v=localStorage.getItem(STORE_KEY);return v?JSON.parse(v):[];}catch(e){return[];}}
+
+let responses=load();
+
+// --- SURVEY ---
+let currentStep=0;
+const STEPS=['Ficha de identificaci\u00f3n','Bloque A \u2014 Marketing actual','Bloque B \u2014 Necesidades','Bloque C \u2014 Disposici\u00f3n al CSM'];
+const PROGRESS=['25%','50%','75%','100%'];
+
+function goStep(n){
+  if(n>currentStep&&n===1&&!validateStep0())return;
+  document.getElementById('step-'+currentStep).style.display='none';
+  currentStep=n;
+  document.getElementById('step-'+n).style.display='block';
+  document.getElementById('step-label').textContent=STEPS[n];
+  document.getElementById('step-count').textContent='Paso '+(n+1)+' de 4';
+  document.getElementById('progress-fill').style.width=PROGRESS[n];
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function validateStep0(){
+  const ok=document.getElementById('f-empresa').value&&
+            document.getElementById('f-nombre').value.trim()&&
+            document.getElementById('f-cargo').value.trim()&&
+            document.getElementById('f-email').value.includes('@');
+  document.getElementById('error-0').style.display=ok?'none':'block';
+  return ok;
+}
+
+function getChecked(id){
+  return[...document.querySelectorAll('#'+id+' input[type=checkbox]:checked')].map(i=>i.value);
+}
+function getRadio(name){
+  const el=document.querySelector('input[name='+name+']:checked');
+  return el?el.value:'';
+}
+function getRank(){
+  return[...document.querySelectorAll('#c2-rank .rank-item')].map(i=>i.dataset.val);
+}
+
+function submitSurvey(){
+  const empresa=document.getElementById('f-empresa').value;
+  const nombre=document.getElementById('f-nombre').value.trim();
+  const email=document.getElementById('f-email').value.trim();
+  if(!empresa||!nombre||!email.includes('@')){
+    document.getElementById('error-submit').style.display='block';
+    return;
+  }
+  const r={
+    id:Date.now(),
+    fecha:new Date().toISOString().slice(0,10),
+    empresa,nombre,
+    cargo:document.getElementById('f-cargo').value.trim(),
+    email,
+    a1:getRadio('a1'),a2:getChecked('a2'),a3:getRadio('a3'),a4:getChecked('a4'),a5:getRadio('a5'),
+    b1:document.getElementById('b1').value.trim(),b2:getRadio('b2'),b3:getChecked('b3'),b4:getChecked('b4'),b5:getRadio('b5'),
+    c1:document.getElementById('c1').value.trim(),c2:getRank(),c3:getRadio('c3'),
+    c4:document.getElementById('c4').value.trim(),c5:document.getElementById('c5').value.trim(),
+    c6:getRadio('c6'),c7:document.getElementById('c7').value.trim()
+  };
+  responses.push(r);
+  save(responses);
+  document.getElementById('survey-form').style.display='none';
+  document.getElementById('success-screen').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// visual feedback checkboxes/radios
+document.addEventListener('change',function(e){
+  if(e.target.type==='checkbox'||e.target.type==='radio'){
+    const item=e.target.closest('.check-item,.radio-item');
+    if(!item)return;
+    if(e.target.type==='radio'){
+      document.querySelectorAll('input[name='+e.target.name+']').forEach(r=>r.closest('.radio-item').classList.remove('selected'));
+    }
+    item.classList.toggle('selected',e.target.checked);
+  }
+});
+
+// drag & drop ranking
+let dragEl=null;
+function dragStart(e){dragEl=e.currentTarget;e.dataTransfer.effectAllowed='move';}
+function dragDrop(e){
+  e.preventDefault();
+  if(!dragEl||dragEl===e.currentTarget)return;
+  const c=document.getElementById('c2-rank');
+  const items=[...c.children];
+  const from=items.indexOf(dragEl);
+  const to=items.indexOf(e.currentTarget);
+  if(from<to)c.insertBefore(dragEl,e.currentTarget.nextSibling);
+  else c.insertBefore(dragEl,e.currentTarget);
+  c.querySelectorAll('.rank-num').forEach((n,i)=>n.textContent=i+1);
+  dragEl=null;
+}
+
+// --- ADMIN ---
+function showAdmin(){
+  document.getElementById('view-survey').classList.remove('active');
+  document.getElementById('view-admin').classList.add('active');
+  document.getElementById('admin-email').focus();
+}
+
+function doLogin(){
+  const e=document.getElementById('admin-email').value;
+  const p=document.getElementById('admin-pass').value;
+  if(e==='admin@chrisco.cl'&&p==='admin123'){
+    document.getElementById('admin-login-screen').style.display='none';
+    document.getElementById('admin-dashboard').style.display='block';
+    renderDashboard();
+  }else{
+    document.getElementById('login-error').style.display='block';
+  }
+}
+
+function logoutAdmin(){
+  document.getElementById('admin-login-screen').style.display='block';
+  document.getElementById('admin-dashboard').style.display='none';
+  document.getElementById('view-admin').classList.remove('active');
+  document.getElementById('view-survey').classList.add('active');
+  document.getElementById('admin-email').value='';
+  document.getElementById('admin-pass').value='';
+}
+
+function esc(s){
+  if(s==null)return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderDashboard(){
+  responses=load();
+  const n=responses.length;
+  const companies=new Set(responses.map(r=>r.empresa)).size;
+  const open=responses.filter(r=>r.c6==='Muy abiertos').length;
+  const budget=responses.filter(r=>r.c3==='Si, hay presupuesto disponible').length;
+
+  document.getElementById('stats-grid').innerHTML=
+    statCard('Respuestas recibidas',n,'de 6 empresas')+
+    statCard('Empresas representadas',companies,'')+
+    statCard('Alta apertura al CSM',(n?Math.round(open/n*100):0)+'%',open+' de '+n)+
+    statCard('Con presupuesto disponible',(n?Math.round(budget/n*100):0)+'%',budget+' de '+n);
+
+  if(n===0){
+    document.getElementById('responses-tbody').innerHTML='<tr><td colspan="8" class="empty-state">A\u00fan no hay respuestas registradas.</td></tr>';
+    return;
+  }
+
+  document.getElementById('responses-tbody').innerHTML=responses.map((r,i)=>{
+    const ci=COMPANIES.findIndex(c=>c===r.empresa||(r.empresa&&r.empresa.startsWith(c.split(' ')[0])));
+    const cc=COLORS[ci>=0?ci:6]||'chip-gray';
+    return `<tr>
+      <td style="color:var(--muted);font-size:12px;">${i+1}</td>
+      <td><span class="chip ${cc}">${esc(r.empresa)}</span></td>
+      <td>${esc(r.nombre)}</td>
+      <td style="color:var(--muted);font-size:13px;">${esc(r.cargo)}</td>
+      <td style="font-size:13px;">${esc(r.c6)||'&mdash;'}</td>
+      <td style="font-size:13px;">${esc(r.c3)||'&mdash;'}</td>
+      <td style="color:var(--muted);font-size:12px;">${r.fecha}</td>
+      <td><button class="btn-secondary" style="font-size:11px;padding:5px 12px;white-space:nowrap;" onclick="showDetail(${i})">Ver todo</button></td>
+    </tr>`;
+  }).join('');
+
+  renderStats();
+}
+
+function statCard(label,value,badge){
+  return `<div class="stat-card"><div class="stat-label">${label}</div><div class="stat-value">${value}</div>${badge?'<div class="stat-badge">'+badge+'</div>':''}</div>`;
+}
+
+function showDetail(idx){
+  const r=responses[idx];
+  document.getElementById('detail-title').textContent=r.nombre+' \u2014 '+r.empresa;
+
+  function dq(label,val){
+    return`<div class="detail-q"><div class="detail-q-label">${label}</div><div class="detail-q-answer">${esc(val)||'&mdash;'}</div></div>`;
+  }
+  function dqArr(label,arr){return dq(label,(arr&&arr.length)?arr.join(', '):'');}
+
+  document.getElementById('detail-body').innerHTML=
+    '<div class="section-divider">Bloque A &mdash; Marketing actual</div>'+
+    dq('A1 \u00b7 Recurso dedicado',r.a1)+dqArr('A2 \u00b7 C\u00f3mo resuelven marketing',r.a2)+
+    dq('A3 \u00b7 Inversi\u00f3n anual',r.a3)+dqArr('A4 \u00b7 Canales activos',r.a4)+dq('A5 \u00b7 Sitio web',r.a5)+
+    '<div class="section-divider">Bloque B &mdash; Necesidades</div>'+
+    dq('B1 \u00b7 Principales brechas',r.b1)+dq('B2 \u00b7 Experiencia con agencias',r.b2)+
+    dqArr('B3 \u00b7 Servicios prioritarios',r.b3)+dqArr('B4 \u00b7 Estacionalidad',r.b4)+dq('B5 \u00b7 Tipo de cliente',r.b5)+
+    '<div class="section-divider">Bloque C &mdash; Disposici\u00f3n al CSM</div>'+
+    dq('C1 \u00b7 Condiciones para agregar valor',r.c1)+
+    dq('C2 \u00b7 Ranking de factores',r.c2?(r.c2.map((v,i)=>(i+1)+'. '+v).join(' &middot; ')):'')+
+    dq('C3 \u00b7 Presupuesto',r.c3)+dq('C4 \u00b7 Qu\u00e9 los har\u00eda NO usarlo',r.c4)+
+    dq('C5 \u00b7 Necesidad urgente',r.c5)+dq('C6 \u00b7 Apertura general',r.c6)+
+    (r.c7?dq('C7 \u00b7 Comentarios',r.c7):'')+
+    '<div class="detail-q" style="margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--border);"><div class="detail-q-label">Email</div><div class="detail-q-answer" style="color:var(--muted);">'+esc(r.email)+'</div></div>';
+
+  const panel=document.getElementById('detail-panel');
+  panel.classList.add('open');
+  setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}),50);
+}
+function closeDetail(){document.getElementById('detail-panel').classList.remove('open');}
+
+function renderStats(){
+  barChart('chart-apertura',responses.map(r=>r.c6||'Sin respuesta'),['Muy abiertos','Abiertos con condiciones','Dudosos','Poco abiertos']);
+  barChart('chart-presupuesto',responses.map(r=>r.c3||'Sin respuesta'),['Si, hay presupuesto disponible','Requeriria aprobacion especial','Probablemente no en ese plazo','No lo se']);
+  const srvC={};responses.flatMap(r=>r.b3||[]).forEach(s=>srvC[s]=(srvC[s]||0)+1);countChart('chart-servicios',srvC);
+  const canC={};responses.flatMap(r=>r.a4||[]).forEach(c=>canC[c]=(canC[c]||0)+1);countChart('chart-canales',canC);
+}
+
+function barChart(elId,data,order){
+  const counts={};data.forEach(v=>{counts[v]=(counts[v]||0)+1;});
+  const max=Math.max(...Object.values(counts),1);
+  const n=responses.length||1;
+  document.getElementById(elId).innerHTML=order.map(k=>{
+    const v=counts[k]||0;
+    const pct=Math.round(v/n*100);
+    const lbl=k.length>36?k.slice(0,36)+'&hellip;':k;
+    return`<div class="bar-chart-item"><div class="bar-chart-label"><span>${lbl}</span><span>${v} (${pct}%)</span></div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/max*100)}%"></div></div></div>`;
+  }).join('');
+}
+
+function countChart(elId,counts){
+  const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,7);
+  if(!sorted.length){document.getElementById(elId).innerHTML='<p style="font-size:13px;color:var(--muted);">Sin datos a\u00fan.</p>';return;}
+  const max=sorted[0][1];
+  document.getElementById(elId).innerHTML=sorted.map(([k,v])=>{
+    const lbl=k.length>30?k.slice(0,30)+'&hellip;':k;
+    return`<div class="bar-chart-item"><div class="bar-chart-label"><span>${lbl}</span><span>${v}</span></div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/max*100)}%"></div></div></div>`;
+  }).join('');
+}
+
+function showTab(id){
+  document.getElementById('tab-responses').style.display=id==='tab-responses'?'block':'none';
+  document.getElementById('tab-stats').style.display=id==='tab-stats'?'block':'none';
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.getAttribute('onclick').includes(id)));
+}
+</script>
+</body>
+</html>
