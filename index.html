@@ -422,7 +422,10 @@ textarea{resize:vertical;min-height:90px;line-height:1.6;}
           <div class="admin-title">Panel de resultados &mdash; CSM Fase 1</div>
           <div class="admin-sub">Diagn&oacute;stico de necesidades de marketing &middot; Divisi&oacute;n Industrial</div>
         </div>
-        <button class="btn-secondary" onclick="logoutAdmin()" style="font-size:12px;">Cerrar sesi&oacute;n</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn-primary" onclick="downloadCSV()" style="font-size:12px;padding:8px 16px;">&#8595; Descargar compilado CSV</button>
+          <button class="btn-secondary" onclick="logoutAdmin()" style="font-size:12px;">Cerrar sesi&oacute;n</button>
+        </div>
       </div>
 
       <div class="stats-grid" id="stats-grid"></div>
@@ -465,9 +468,12 @@ textarea{resize:vertical;min-height:90px;line-height:1.6;}
 const COMPANIES=['CB Chile','CB Peru','TST (Technosteel)','MDF (Mining Drilling Fluids)','UHCO','CHRISCO (Christensen Comercial)'];
 const COLORS=['chip-blue','chip-teal','chip-amber','chip-red','chip-green','chip-purple'];
 const STORE_KEY='csm_di_responses_v3';
+const DRAFT_KEY='csm_di_draft_v3';
 
 function save(data){try{localStorage.setItem(STORE_KEY,JSON.stringify(data));}catch(e){}}
 function load(){try{const v=localStorage.getItem(STORE_KEY);return v?JSON.parse(v):[];}catch(e){return[];}}
+function saveDraft(data){try{localStorage.setItem(DRAFT_KEY,JSON.stringify(data));}catch(e){}}
+function loadDraft(){try{const v=localStorage.getItem(DRAFT_KEY);return v?JSON.parse(v):null;}catch(e){return null;}}
 
 let responses=load();
 
@@ -478,6 +484,7 @@ const PROGRESS=['25%','50%','75%','100%'];
 
 function goStep(n){
   if(n>currentStep&&n===1&&!validateStep0())return;
+  autoSaveDraft();
   document.getElementById('step-'+currentStep).style.display='none';
   currentStep=n;
   document.getElementById('step-'+n).style.display='block';
@@ -507,6 +514,58 @@ function getRank(){
   return[...document.querySelectorAll('#c2-rank .rank-item')].map(i=>i.dataset.val);
 }
 
+function collectForm(){
+  return{
+    empresa:document.getElementById('f-empresa').value,
+    nombre:document.getElementById('f-nombre').value.trim(),
+    cargo:document.getElementById('f-cargo').value.trim(),
+    email:document.getElementById('f-email').value.trim(),
+    a1:getRadio('a1'),a2:getChecked('a2'),a3:getRadio('a3'),a4:getChecked('a4'),a5:getRadio('a5'),
+    b1:document.getElementById('b1').value.trim(),b2:getRadio('b2'),b3:getChecked('b3'),b4:getChecked('b4'),b5:getRadio('b5'),
+    c1:document.getElementById('c1').value.trim(),c2:getRank(),c3:getRadio('c3'),
+    c4:document.getElementById('c4').value.trim(),c5:document.getElementById('c5').value.trim(),
+    c6:getRadio('c6'),c7:document.getElementById('c7').value.trim()
+  };
+}
+
+function autoSaveDraft(){
+  const d=collectForm();
+  if(d.email||d.nombre||d.empresa) saveDraft(d);
+}
+
+function fillFormFromDraft(d){
+  if(!d)return;
+  if(d.empresa){const sel=document.getElementById('f-empresa');[...sel.options].forEach(o=>{if(o.value===d.empresa||o.text===d.empresa)sel.value=o.value;});}
+  if(d.nombre)document.getElementById('f-nombre').value=d.nombre;
+  if(d.cargo)document.getElementById('f-cargo').value=d.cargo;
+  if(d.email)document.getElementById('f-email').value=d.email;
+  ['a1','a3','a5','b2','b5','c3','c6'].forEach(name=>{
+    if(d[name]){
+      const el=document.querySelector('input[name='+name+'][value="'+CSS.escape(d[name])+'"]');
+      if(el){el.checked=true;el.closest('.radio-item').classList.add('selected');}
+    }
+  });
+  ['a2','a4','b3','b4'].forEach(id=>{
+    if(d[id]&&d[id].length){
+      d[id].forEach(val=>{
+        const el=document.querySelector('#'+id+' input[value="'+CSS.escape(val)+'"]');
+        if(el){el.checked=true;el.closest('.check-item').classList.add('selected');}
+      });
+    }
+  });
+  ['b1','c1','c4','c5','c7'].forEach(id=>{
+    if(d[id])document.getElementById(id).value=d[id];
+  });
+  if(d.c2&&d.c2.length){
+    const container=document.getElementById('c2-rank');
+    d.c2.forEach(val=>{
+      const item=[...container.children].find(el=>el.dataset.val===val);
+      if(item)container.appendChild(item);
+    });
+    container.querySelectorAll('.rank-num').forEach((n,i)=>n.textContent=i+1);
+  }
+}
+
 function submitSurvey(){
   const empresa=document.getElementById('f-empresa').value;
   const nombre=document.getElementById('f-nombre').value.trim();
@@ -515,24 +574,26 @@ function submitSurvey(){
     document.getElementById('error-submit').style.display='block';
     return;
   }
-  const r={
-    id:Date.now(),
-    fecha:new Date().toISOString().slice(0,10),
-    empresa,nombre,
-    cargo:document.getElementById('f-cargo').value.trim(),
-    email,
-    a1:getRadio('a1'),a2:getChecked('a2'),a3:getRadio('a3'),a4:getChecked('a4'),a5:getRadio('a5'),
-    b1:document.getElementById('b1').value.trim(),b2:getRadio('b2'),b3:getChecked('b3'),b4:getChecked('b4'),b5:getRadio('b5'),
-    c1:document.getElementById('c1').value.trim(),c2:getRank(),c3:getRadio('c3'),
-    c4:document.getElementById('c4').value.trim(),c5:document.getElementById('c5').value.trim(),
-    c6:getRadio('c6'),c7:document.getElementById('c7').value.trim()
-  };
-  responses.push(r);
+  const r=Object.assign({id:Date.now(),fecha:new Date().toISOString().slice(0,10)},collectForm());
+  const idx=responses.findIndex(x=>x.email&&x.email.toLowerCase()===email.toLowerCase());
+  if(idx>=0){responses[idx]=r;}else{responses.push(r);}
   save(responses);
+  saveDraft(r);
   document.getElementById('survey-form').style.display='none';
   document.getElementById('success-screen').style.display='block';
   window.scrollTo({top:0,behavior:'smooth'});
 }
+
+window.addEventListener('DOMContentLoaded',function(){
+  const draft=loadDraft();
+  if(draft){
+    fillFormFromDraft(draft);
+    const banner=document.createElement('div');
+    banner.style.cssText='background:#E6F1FB;border:1px solid #1A3A5C;border-radius:8px;padding:10px 14px;margin-bottom:1rem;font-size:13px;color:#1A3A5C;display:flex;justify-content:space-between;align-items:center;gap:10px;';
+    banner.innerHTML='<span>&#128221; Tus respuestas anteriores fueron recuperadas. Puedes modificarlas y reenviar.</span><button onclick="this.parentNode.remove()" style="background:none;border:none;cursor:pointer;font-size:18px;color:#1A3A5C;flex-shrink:0;">&times;</button>';
+    document.querySelector('.survey-intro').after(banner);
+  }
+});
 
 // visual feedback checkboxes/radios
 document.addEventListener('change',function(e){
@@ -593,6 +654,30 @@ function logoutAdmin(){
 function esc(s){
   if(s==null)return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function downloadCSV(){
+  if(!responses.length){alert('No hay respuestas aún.');return;}
+  const cols=['fecha','empresa','nombre','cargo','email','a1','a2','a3','a4','a5','b1','b2','b3','b4','b5','c1','c2','c3','c4','c5','c6','c7'];
+  const labels={'fecha':'Fecha','empresa':'Empresa','nombre':'Nombre','cargo':'Cargo','email':'Email',
+    'a1':'A1 Recurso MKT','a2':'A2 Como resuelven MKT','a3':'A3 Inversion anual','a4':'A4 Canales','a5':'A5 Sitio web',
+    'b1':'B1 Brechas','b2':'B2 Experiencia agencias','b3':'B3 Servicios prioritarios','b4':'B4 Estacionalidad','b5':'B5 Tipo cliente',
+    'c1':'C1 Condiciones valor','c2':'C2 Ranking factores','c3':'C3 Presupuesto','c4':'C4 Razon no usar','c5':'C5 Necesidad urgente','c6':'C6 Apertura','c7':'C7 Comentarios'};
+  function csvCell(v){
+    if(Array.isArray(v))v=v.join(' | ');
+    if(v==null)v='';
+    v=String(v).replace(/"/g,'""');
+    return '"'+v+'"';
+  }
+  const header=cols.map(c=>csvCell(labels[c])).join(',');
+  const rows=responses.map(r=>cols.map(c=>csvCell(r[c])).join(','));
+  const csv='﻿'+[header,...rows].join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='CSM_Respuestas_'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function renderDashboard(){
