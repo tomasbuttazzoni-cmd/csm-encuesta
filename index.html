@@ -566,6 +566,8 @@ function fillFormFromDraft(d){
   }
 }
 
+const SHEETS_URL='https://script.google.com/macros/s/AKfycbwlJGjQV1PxdDE8hpB9pvEe6a2_OomJS8HdjfnQvYsFmdvbv0PuYgEzqTa6FRRwpHSV/exec';
+
 function submitSurvey(){
   const empresa=document.getElementById('f-empresa').value;
   const nombre=document.getElementById('f-nombre').value.trim();
@@ -582,6 +584,8 @@ function submitSurvey(){
   document.getElementById('survey-form').style.display='none';
   document.getElementById('success-screen').style.display='block';
   window.scrollTo({top:0,behavior:'smooth'});
+  fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(r)})
+    .catch(err=>console.warn('Sheets sync error:',err));
 }
 
 window.addEventListener('DOMContentLoaded',function(){
@@ -680,6 +684,15 @@ function downloadCSV(){
   URL.revokeObjectURL(url);
 }
 
+function deleteResponse(idx){
+  const r=responses[idx];
+  if(!confirm('\u00bfEliminar la respuesta de '+r.nombre+' ('+r.empresa+')? Esta acci\u00f3n no se puede deshacer.'))return;
+  responses.splice(idx,1);
+  save(responses);
+  closeDetail();
+  renderDashboard();
+}
+
 function renderDashboard(){
   responses=load();
   const n=responses.length;
@@ -709,7 +722,10 @@ function renderDashboard(){
       <td style="font-size:13px;">${esc(r.c6)||'&mdash;'}</td>
       <td style="font-size:13px;">${esc(r.c3)||'&mdash;'}</td>
       <td style="color:var(--muted);font-size:12px;">${r.fecha}</td>
-      <td><button class="btn-secondary" style="font-size:11px;padding:5px 12px;white-space:nowrap;" onclick="showDetail(${i})">Ver todo</button></td>
+      <td style="white-space:nowrap;">
+        <button class="btn-secondary" style="font-size:11px;padding:5px 12px;" onclick="showDetail(${i})">Ver</button>
+        <button onclick="deleteResponse(${i})" style="font-size:11px;padding:5px 10px;margin-left:4px;background:none;border:1px solid #e0b0b0;border-radius:8px;color:#991b1b;cursor:pointer;" title="Eliminar esta respuesta">&#128465;</button>
+      </td>
     </tr>`;
   }).join('');
 
